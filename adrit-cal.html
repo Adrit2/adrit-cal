@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ADRIT CAL</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  --void: #04050a;
+  --deep: #080b14;
+  --glass: rgba(255,255,255,0.04);
+  --glass2: rgba(255,255,255,0.07);
+  --rim: rgba(255,255,255,0.09);
+  --rim2: rgba(255,255,255,0.15);
+
+  --gold: #c9a84c;
+  --gold2: #e8c97a;
+  --gold-glow: rgba(201,168,76,0.25);
+  --gold-dim: rgba(201,168,76,0.12);
+
+  --ice: #7eb8f7;
+  --ice2: #a8d4ff;
+  --rose: #f7849b;
+  --sage: #7ef5c0;
+  --amber: #f7c27e;
+  --violet: #c084fc;
+
+  --text: #f0f2f8;
+  --muted: rgba(240,242,248,0.4);
+  --faint: rgba(240,242,248,0.15);
+
+  --r: 20px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--void);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ── ANIMATED BACKGROUND ── */
+.bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  animation: drift 18s ease-in-out infinite;
+}
+.orb1 { width:600px;height:600px;background:radial-gradient(circle,#1a3a6e,transparent 70%); top:-200px;left:-150px; animation-delay:0s; }
+.orb2 { width:500px;height:500px;background:radial-gradient(circle,#2d1a4e,transparent 70%); bottom:-100px;right:-100px; animation-delay:-6s; }
+.orb3 { width:350px;height:350px;background:radial-gradient(circle,rgba(201,168,76,0.3),transparent 70%); top:40%;left:55%; animation-delay:-12s; }
+
+@keyframes drift {
+  0%,100%{ transform:translate(0,0) scale(1); }
+  33%{ transform:translate(30px,-40px) scale(1.05); }
+  66%{ transform:translate(-20px,30px) scale(0.95); }
+}
+
+.grid-lines {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ── LAYOUT ── */
+.shell {
+  position: relative;
+  z-index: 1;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 24px 60px;
+}
+
+/* ── HEADER ── */
+header {
+  text-align: center;
+  padding: 56px 0 40px;
+  position: relative;
+}
+.crown {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.crown-line {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold));
+}
+.crown-line.r { background: linear-gradient(90deg, var(--gold), transparent); }
+.crown-icon { color: var(--gold); font-size: 1.1rem; }
+
+.brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  font-weight: 300;
+  letter-spacing: 12px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, var(--gold2) 0%, #fff 45%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  position: relative;
+}
+.brand::after {
+  content: 'ADRIT CAL';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--gold2), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: blur(20px);
+  opacity: 0.5;
+  z-index: -1;
+}
+
+.subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.7;
+  margin-top: 10px;
+}
+
+/* ── NAV ── */
+nav {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+  background: var(--glass);
+  border: 1px solid var(--rim);
+  border-radius: 50px;
+  padding: 6px;
+  backdrop-filter: blur(20px);
+}
+
+.tab {
+  padding: 10px 20px;
+  border-radius: 50px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(.4,0,.2,1);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+.tab:hover { color: var(--text); }
+.tab.on {
+  background: linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.08));
+  border: 1px solid rgba(201,168,76,0.35);
+  color: var(--gold2);
+  box-shadow: 0 0 20px rgba(201,168,76,0.1);
+}
+.tab .t-icon { font-size: 0.95rem; }
+
+/* ── PANEL ── */
+.panel { display: none; animation: panelIn 0.4s cubic-bezier(.4,0,.2,1); }
+.panel.on { display: block; }
+@keyframes panelIn {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── GLASS CARD ── */
+.card {
+  background: var(--glass);
+  border: 1px solid var(--rim);
+  border-radius: var(--r);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  overflow: hidden;
+  position: relative;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--rim2), transparent);
+}
+
+.card-inner { padding: 36px; }
+
+.card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+.card-titles {}
+.card-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+.card-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.2rem;
+  font-weight: 300;
+  line-height: 1.1;
+}
+.card-sub {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+.card-icon-big {
+  font-size: 2.8rem;
+  opacity: 0.6;
+  line-height: 1;
+}
+
+/* ── FORM ELEMENTS ── */
+.field { margin-bottom: 18px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.field-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+lbl, .lbl {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+input[type=text], input[type=number], input[type=date], select {
+  width: 100%;
+  padding: 13px 16px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--rim);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  -webkit-appearance: none;
+}
+input:focus, select:focus {
+  border-color: rgba(201,168,76,0.5);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.08);
+  background: rgba(255,255,255,0.07);
+}
+select option { background: #0f1220; }
+
+/* ── MAIN BUTTON ── */
+.cta {
+  width: 100%;
+  margin-top: 6px;
+  padding: 15px;
+  border-radius: 12px;
+  border: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  border-radius: inherit;
+}
+.cta:hover { transform: translateY(-2px); }
+.cta:active { transform: translateY(0); }
+
+.cta-gold {
+  background: linear-gradient(135deg, #b8943f, #c9a84c, #dfc06a, #c9a84c);
+  background-size: 200% 200%;
+  color: #0a0800;
+  box-shadow: 0 8px 32px rgba(201,168,76,0.3);
+  animation: shimmer 3s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0%,100%{ background-position:0% 50%; }
+  50%{ background-position:100% 50%; }
+}
+.cta-ice  { background: linear-gradient(135deg, #1a5fa8, #2d82d4, #5ba8f5); color: #fff; box-shadow: 0 8px 32px rgba(91,168,245,0.25); }
+.cta-rose { background: linear-gradient(135deg, #8b1a3a, #c4365b, #f7849b); color: #fff; box-shadow: 0 8px 32px rgba(247,132,155,0.25); }
+.cta-sage { background: linear-gradient(135deg, #1a6b4a, #2da87a, #7ef5c0); color: #04140d; box-shadow: 0 8px 32px rgba(126,245,192,0.2); }
+.cta-amber { background: linear-gradient(135deg, #8b5e1a, #c48a2d, #f7c27e); color: #0a0500; box-shadow: 0 8px 32px rgba(247,194,126,0.25); }
+.cta-violet { background: linear-gradient(135deg, #5b1a8b, #8b3ac4, #c084fc); color: #fff; box-shadow: 0 8px 32px rgba(192,132,252,0.25); }
+
+/* ── DIVIDER ── */
+.divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--rim2), transparent);
+  margin: 28px 0;
+}
+
+/* ── RESULT GRID ── */
+.rg { display: grid; gap: 12px; }
+.rg2 { grid-template-columns: repeat(2,1fr); }
+.rg3 { grid-template-columns: repeat(3,1fr); }
+.rg4 { grid-template-columns: repeat(4,1fr); }
+
+.stat {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--rim);
+  border-radius: 14px;
+  padding: 20px 16px;
+  text-align: center;
+  transition: border-color 0.3s;
+}
+.stat.hero {
+  border-color: rgba(201,168,76,0.4);
+  background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.03));
+  box-shadow: 0 0 40px rgba(201,168,76,0.08), inset 0 1px 0 rgba(201,168,76,0.2);
+}
+.stat-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.2rem;
+  font-weight: 400;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.stat-val.gold { color: var(--gold2); }
+.stat-val.ice { color: var(--ice); }
+.stat-val.rose { color: var(--rose); }
+.stat-val.sage { color: var(--sage); }
+.stat-val.amber { color: var(--amber); }
+.stat-val.violet { color: var(--violet); }
+
+.stat-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* info rows */
+.info-list { margin-top: 4px; }
+.ir {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.ir:last-child { border-bottom: none; }
+.ir-l { font-size: 0.82rem; color: var(--muted); }
+.ir-v {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+.ir-v.gold { color: var(--gold2); }
+.ir-v.ice  { color: var(--ice); }
+.ir-v.rose { color: var(--rose); }
+.ir-v.sage { color: var(--sage); }
+.ir-v.amber { color: var(--amber); }
+.ir-v.violet { color: var(--violet); }
+
+.result-wrap { display: none; }
+.result-wrap.show { display: block; }
+
+/* ── PROGRESS BAR ── */
+.prog-wrap { margin-top: 4px; }
+.prog-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.prog-track {
+  height: 8px;
+  border-radius: 50px;
+  background: rgba(255,255,255,0.07);
+  position: relative;
+  overflow: visible;
+}
+.prog-fill {
+  height: 100%;
+  border-radius: 50px;
+  transition: width 0.6s cubic-bezier(.4,0,.2,1);
+}
+.prog-pin {
+  position: absolute;
+  top: -6px;
+  width: 6px;
+  height: 20px;
+  background: white;
+  border-radius: 3px;
+  transform: translateX(-50%);
+  box-shadow: 0 0 10px rgba(255,255,255,0.8);
+  transition: left 0.6s cubic-bezier(.4,0,.2,1);
+}
+.prog-cats {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--faint);
+  letter-spacing: 1px;
+}
+
+/* ── TIP QUICK SELECT ── */
+.tip-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tip-chip {
+  flex: 1;
+  min-width: 52px;
+  padding: 10px 6px;
+  border-radius: 10px;
+  border: 1px solid var(--rim);
+  background: rgba(255,255,255,0.04);
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+}
+.tip-chip.on {
+  border-color: rgba(126,245,192,0.4);
+  color: var(--sage);
+  background: rgba(126,245,192,0.07);
+  box-shadow: 0 0 16px rgba(126,245,192,0.08);
+}
+
+/* ── CURRENCY CALC ── */
+.currency-display {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--rim);
+  border-radius: 14px;
+  padding: 24px;
+  text-align: center;
+  margin: 20px 0;
+}
+.curr-from {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3rem;
+  font-weight: 300;
+  color: var(--gold2);
+  line-height: 1;
+}
+.curr-arrow { color: var(--muted); font-size: 1.5rem; margin: 8px 0; }
+.curr-to {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3rem;
+  font-weight: 300;
+  color: var(--ice);
+  line-height: 1;
+}
+.curr-note {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--faint);
+  margin-top: 10px;
+  letter-spacing: 1.5px;
+}
+
+/* ── SPEED CALC (BASIC) ── */
+.calc-screen {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--rim);
+  border-radius: 16px;
+  padding: 24px 28px 20px;
+  text-align: right;
+  margin-bottom: 18px;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+}
+.calc-hist {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--faint);
+  min-height: 1.2em;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.calc-main {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3.2rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -1px;
+}
+.calc-memory {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--gold);
+  letter-spacing: 2px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.calc-memory.show { opacity: 1; }
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 10px;
+}
+.key {
+  padding: 20px 8px;
+  border-radius: 14px;
+  border: 1px solid var(--rim);
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.12s;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.key::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.06);
+  opacity: 0;
+  transition: opacity 0.1s;
+  border-radius: inherit;
+}
+.key:hover::after { opacity: 1; }
+.key:active { transform: scale(0.94); }
+
+.key.fn   { background: rgba(255,255,255,0.08); color: var(--muted); font-size: 0.85rem; }
+.key.op   { background: rgba(201,168,76,0.12); border-color: rgba(201,168,76,0.25); color: var(--gold2); font-size: 1.2rem; }
+.key.eq   { background: linear-gradient(135deg, rgba(201,168,76,0.6), rgba(201,168,76,0.35)); border-color: rgba(201,168,76,0.5); color: #0a0800; font-weight: 700; font-size: 1.3rem; box-shadow: 0 4px 20px rgba(201,168,76,0.2); }
+.key.mem  { background: rgba(192,132,252,0.1); border-color: rgba(192,132,252,0.2); color: var(--violet); font-size: 0.8rem; }
+.key.zero { grid-column: span 2; text-align: left; padding-left: 24px; }
+
+.mem-row {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+/* ── UNIT CONVERTER ── */
+.conv-display {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--rim);
+  border-radius: 14px;
+  padding: 20px 24px;
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.conv-side { flex: 1; }
+.conv-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.4rem;
+  font-weight: 300;
+  line-height: 1.1;
+}
+.conv-unit-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.conv-divider {
+  color: var(--gold);
+  font-size: 1.8rem;
+  opacity: 0.5;
+}
+.swap-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--rim);
+  border-radius: 10px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  margin-top: 10px;
+}
+.swap-btn:hover { color: var(--gold2); border-color: rgba(201,168,76,0.3); }
+
+/* ── SPECIAL PANELS ── */
+/* ── FOOTER ── */
+footer {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 28px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+footer span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+footer .g {
+  background: linear-gradient(90deg, var(--gold), var(--gold2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:560px) {
+  .shell { padding: 0 14px 48px; }
+  .card-inner { padding: 24px 18px; }
+  .rg3, .rg4 { grid-template-columns: repeat(2,1fr); }
+  .field-row, .field-row3 { grid-template-columns: 1fr; }
+  .brand { letter-spacing: 6px; }
+  .key { padding: 18px 4px; font-size: 1rem; }
+  .calc-main { font-size: 2.4rem; }
+  nav { padding: 5px; gap: 4px; }
+  .tab { padding: 8px 13px; font-size: 0.78rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND -->
+<div class="bg-canvas">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="grid-lines"></div>
+</div>
+
+<div class="shell">
+
+  <!-- HEADER -->
+  <header>
+    <div class="crown">
+      <div class="crown-line"></div>
+      <div class="crown-icon">✦</div>
+      <div class="crown-line r"></div>
+    </div>
+    <div class="brand">ADRIT CAL</div>
+    <div class="subtitle">Precision · Elegance · Power</div>
+  </header>
+
+  <!-- NAV -->
+  <nav>
+    <button class="tab on" onclick="show('age')" id="tab-age"><span class="t-icon">📅</span> Age</button>
+    <button class="tab" onclick="show('bmi')" id="tab-bmi"><span class="t-icon">⚖️</span> BMI</button>
+    <button class="tab" onclick="show('loan')" id="tab-loan"><span class="t-icon">💳</span> Loan</button>
+    <button class="tab" onclick="show('tip')" id="tab-tip"><span class="t-icon">🧾</span> Tip</button>
+    <button class="tab" onclick="show('unit')" id="tab-unit"><span class="t-icon">📐</span> Units</button>
+    <button class="tab" onclick="show('calc')" id="tab-calc"><span class="t-icon">🧮</span> Calc</button>
+  </nav>
+
+  <!-- ════════════════════════════════
+       AGE PANEL
+  ════════════════════════════════ -->
+  <div class="panel on" id="age-panel">
+    <div class="card">
+      <div class="card-inner">
+        <div class="card-head">
+          <div class="card-titles">
+            <div class="card-badge">✦ Life Timer</div>
+            <div class="card-name">Age Calculator</div>
+            <div class="card-sub">Your exact age — years, months, weeks, days,<br>hours and minutes since your first breath.</div>
+          </div>
+          <div class="card-icon-big">📅</div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <div class="lbl">Date of Birth</div>
+            <input type="date" id="a-dob"/>
+          </div>
+          <div class="field">
+            <div class="lbl">Calculate As Of</div>
+            <input type="date" id="a-asof"/>
+          </div>
+        </div>
+        <button class="cta cta-gold" onclick="calcAge()">Calculate Age →</button>
+
+        <div class="result-wrap" id="age-res">
+          <hr class="divider"/>
+
+          <div class="rg rg3">
+            <div class="stat hero">
+              <div class="stat-val gold" id="r-yr">—</div>
+              <div class="stat-lbl">Years</div>
+            </div>
+            <div class="stat">
+              <div class="stat-val" id="r-mo">—</div>
+              <div class="stat-lbl">Months</div>
+            </div>
+            <div class="stat">
+              <div class="stat-val" id="r-wk">—</div>
+              <div class="stat-lbl">Weeks</div>
+            </div>
+          </div>
+
+          <div class="rg rg3" style="margin-top:12px">
+            <div class="stat">
+              <div class="stat-val" id="r-dy">—</div>
+              <div class="stat-lbl">Days</div>
+            </div>
+            <div class="stat">
+              <div class="stat-val" id="r-hr">—</div>
+              <div class="stat-lbl">Hours</div>
+            </div>
+            <div class="stat">
+              <div class="stat-val" id="r-mn">—</div>
+              <div class="stat-lbl">Minutes</div>
+            </div>
+          </div>
+
+          <hr class="divider"/>
+
+          <div class="info-list">
+            <div class="ir"><span class="ir-l">Day of Birth</span><span class="ir-v gold" id="r-dow">—</span></div>
+            <div class="ir"><span class="ir-l">Zodiac Sign</span><span class="ir-v amber" id="r-zod">—</span></div>
+            <div class="ir"><span class="ir-l">Chinese Zodiac</span><span class="ir-v violet" id="r-czod">—</span></div>
+            <div class="ir"><span class="ir-l">Next Birthday</span><span class="ir-v sage" id="r-nbday">—</span></div>
+            <div class="ir"><span class="ir-l">Generation</span><span class="ir-v ice" id="r-gen">—</span></div>
+            <div class="ir"><span class="ir-l">Seconds Lived</span><span class="ir-v rose" id="r-sec">—</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       BMI PANEL
+  ════════════════════════════════ -->
+  <div class="panel" id="bmi-panel">
+    <div class="card">
+      <div class="card-inner">
+        <div class="card-head">
+          <div class="card-titles">
+            <div class="card-badge">✦ Health Index</div>
+            <div class="card-name">BMI Calculator</div>
+            <div class="card-sub">Body Mass Index with health range analysis,<br>ideal weight and caloric baseline estimate.</div>
+          </div>
+          <div class="card-icon-big">⚖️</div>
+        </div>
+
+        <div class="field">
+          <div class="lbl">Unit System</div>
+          <select id="b-unit" onchange="toggleBmiUnit()">
+            <option value="metric">Metric — kg / cm</option>
+            <option value="imperial">Imperial — lbs / ft · in</option>
+          </select>
+        </div>
+
+        <div id="b-metric">
+          <div class="field-row">
+            <div class="field"><div class="lbl">Weight (kg)</div><input type="number" id="b-kg" placeholder="70" min="1" max="500"/></div>
+            <div class="field"><div class="lbl">Height (cm)</div><input type="number" id="b-cm" placeholder="175" min="50" max="300"/></div>
+          </div>
+        </div>
+        <div id="b-imp" style="display:none">
+          <div class="field"><div class="lbl">Weight (lbs)</div><input type="number" id="b-lbs" placeholder="154" min="1"/></div>
+          <div class="field-row">
+            <div class="field"><div class="lbl">Height — ft</div><input type="number" id="b-ft" placeholder="5" min="1" max="9"/></div>
+            <div class="field"><div class="lbl">Height — in</div><input type="number" id="b-in" placeholder="9" min="0" max="11"/></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="lbl">Age (optional, for TDEE)</div>
+          <input type="number" id="b-age" placeholder="25" min="5" max="120"/>
+        </div>
+        <div class="field">
+          <div class="lbl">Sex (for TDEE)</div>
+          <select id="b-sex">
+            <option value="m">Male</option>
+            <option value="f">Female</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="lbl">Activity Level</div>
+          <select id="b-act">
+            <option value="1.2">Sedentary (desk job, no exercise)</option>
+            <option value="1.375">Light (exercise 1–3×/week)</option>
+            <option value="1.55" selected>Moderate (exercise 3–5×/week)</option>
+            <option value="1.725">Active (exercise 6–7×/week)</option>
+            <option value="1.9">Very Active (hard training + physical job)</option>
+          </select>
+        </div>
+
+        <button class="cta cta-ice" onclick="calcBmi()">Analyse Body Metrics →</button>
+
+        <div class="result-wrap" id="bmi-res">
+          <hr class="divider"/>
+          <div class="rg rg2">
+            <div class="stat hero" style="border-color:rgba(126,181,247,0.4);background:linear-gradient(135deg,rgba(126,181,247,0.08),rgba(126,181,247,0.02));box-shadow:0 0 40px rgba(126,181,247,0.08),inset 0 1px 0 rgba(126,181,247,0.2)">
+              <div class="stat-val ice" id="r-bmi">—</div>
+              <div class="stat-lbl">BMI Score</div>
+            </div>
+            <div class="stat">
+              <div class="stat-val" id="r-bmi-cat" style="font-size:1.2rem;padding-top:8px">—</div>
+              <div class="stat-lbl">Category</div>
+            </div>
+          </div>
+
+          <div class="prog-wrap" style="margin-top:20px">
+            <div class="prog-label-row"><span>Scale</span><span id="r-bmi-pos">—</span></div>
+            <div class="prog-track">
+              <div class="prog-fill" id="bmi-fill" style="width:0%;background:linear-gradient(90deg,#4f7cff,#7ef5c0,#ffc93c,#ff6b6b)"></div>
+              <div class="prog-pin" id="bmi-pin" style="left:0%"></div>
+            </div>
+            <div class="prog-cats"><span>Underweight</span><span>Normal</span><span>Overweight</span><span>Obese</span></div>
+          </div>
+
+          <hr class="divider"/>
+          <div class="info-list">
+            <div class="ir"><span class="ir-l">Healthy BMI Range</span><span class="ir-v sage" id="r-hlth">—</span></div>
+            <div class="ir"><span class="ir-l">Ideal Weight</span><span class="ir-v gold" id="r-ideal">—</span></div>
+            <div class="ir"><span class="ir-l">Weight to Lose/Gain</span><span class="ir-v ice" id="r-delta">—</span></div>
+            <div class="ir"><span class="ir-l">BMR (Basal Metabolic Rate)</span><span class="ir-v amber" id="r-bmr">—</span></div>
+            <div class="ir"><span class="ir-l">TDEE (Daily Calories)</span><span class="ir-v rose" id="r-tdee">—</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       LOAN PANEL
+  ════════════════════════════════ -->
+  <div class="panel" id="loan-panel">
+    <div class="card">
+      <div class="card-inner">
+        <div class="card-head">
+          <div class="card-titles">
+            <div class="card-badge">✦ Finance</div>
+            <div class="card-name">Loan Calculator</div>
+            <div class="card-sub">Full amortisation breakdown — monthly payment,<br>total interest, and payoff date.</div>
+          </div>
+          <div class="card-icon-big">💳</div>
+        </div>
+
+        <div class="field"><div class="lbl">Loan Amount ($)</div><input type="number" id="l-amt" placeholder="25,000" min="0"/></div>
+        <div class="field-row">
+          <div class="field"><div class="lbl">Annual Rate (%)</div><input type="number" id="l-rate" placeholder="6.5" step="0.1" min="0" max="100"/></div>
+          <div class="field"><div class="lbl">Term (Years)</div><input type="number" id="l-term" placeholder="5" min="1" max="50"/></div>
+        </div>
+        <div class="field">
+          <div class="lbl">Loan Type</div>
+          <select id="l-type">
+            <option value="amort">Standard Amortising Loan</option>
+            <option value="interest">Interest-Only Loan</option>
+            <option value="bullet">Bullet (Balloon) Loan</option>
+          </select>
+        </div>
+        <div class="field"><div class="lbl">Extra Monthly Payment ($, optional)</div><input type="number" id="l-extra" placeholder="0" min="0"/></div>
+
+        <button class="cta cta-amber" onclick="calcLoan()">Calculate Loan →</button>
+
+        <div class="result-wrap" id="loan-res">
+          <hr class="divider"/>
+          <div class="rg rg2">
+            <div class="stat hero" style="border-color:rgba(247,194,126,0.4);background:linear-gradient(135deg,rgba(247,194,126,0.08),rgba(247,194,126,0.02));box-shadow:0 0 40px rgba(247,194,126,0.08),inset 0 1px 0 rgba(247,194,126,0.2)">
+              <div class="stat-val amber" id="r-mthly">—</div>
+              <div class="stat-lbl">Monthly Payment</div>
+            </div>
+            <div class="stat">
+              <div class="stat-val" id="r-total-pay" style="font-size:1.7rem">—</div>
+              <div class="stat-lbl">Total Payment</div>
+            </div>
+          </div>
+
+          <hr class="divider"/>
+          <div class="info-list">
+            <div class="ir"><span class="ir-l">Principal Amount</span><span class="ir-v sage" id="r-prin">—</span></div>
+            <div class="ir"><span class="ir-l">Total Interest</span><span class="ir-v rose" id="r-int">—</span></div>
+            <div class="ir"><span class="ir-l">Number of Payments</span><span class="ir-v" id="r-npy">—</span></div>
+            <div class="ir"><span class="ir-l">Payoff Date</span><span class="ir-v gold" id="r-payoff">—</span></div>
+            <div class="ir"><span class="ir-l">Interest / Principal</span><span class="ir-v amber" id="r-iprat">—</span></div>
+            <div class="ir" id="r-savings-row" style="display:none"><span class="ir-l">Saved with Extra Payment</span><span class="ir-v sage" id="r-savings">—</span></div>
+          </div>
+
+          <!-- mini progress bar showing interest portion -->
+          <div class="prog-wrap" style="margin-top:20px">
+            <div class="prog-label-row"><span>Principal vs Interest</span><span id="r-ppct">—</span></div>
+            <div class="prog-track">
+              <div class="prog-fill" id="loan-fill" style="width:0%;background:linear-gradient(90deg,var(--sage),var(--rose))"></div>
+            </div>
+            <div class="prog-cats"><span>← Principal</span><span>Interest →</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       TIP PANEL
+  ════════════════════════════════ -->
+  <div class="panel" id="tip-panel">
+    <div class="card">
+      <div class="card-inner">
+        <div class="card-head">
+          <div class="card-titles">
+            <div class="card-badge">✦ Dining</div>
+            <div class="card-name">Tip Calculator</div>
+            <div class="card-sub">Split the bill perfectly. Choose tip %, split<br>by people, and see each person's exact share.</div>
+          </div>
+          <div class="card-icon-big">🧾</div>
+        </div>
+
+        <div class="field"><div class="lbl">Bill Amount ($)</div><input type="number" id="t-bill" placeholder="0.00" min="0" step="0.01" oninput="calcTip()"/></div>
+
+        <div class="field">
+          <div class="lbl">Tip Percentage</div>
+          <div class="tip-row" id="tip-chips">
+            <div class="tip-chip" onclick="pickTip(5)">5%</div>
+            <div class="tip-chip" onclick="pickTip(10)">10%</div>
+            <div class="tip-chip on" onclick="pickTip(15)">15%</div>
+            <div class="tip-chip" onclick="pickTip(18)">18%</div>
+            <div class="tip-chip" onclick="pickTip(20)">20%</div>
+            <div class="tip-chip" onclick="pickTip(25)">25%</div>
+          </div>
+        </div>
+
+        <div class="field"><div class="lbl">Custom Tip %</div><input type="number" id="t-custom" placeholder="e.g. 22" min="0" max="100" oninput="customTip()"/></div>
+        <div class="field"><div class="lbl">Number of People</div><input type="number" id="t-ppl" placeholder="2" value="2" min="1" oninput="calcTip()"/></div>
+        <div class="field">
+          <div class="lbl">Rounding</div>
+          <select id="t-round" onchange="calcTip()">
+            <option value="none">No rounding</option>
+            <option value="person">Round per person (up)</option>
+            <option value="total">Round total (up)</option>
+          </select>
+        </div>
+
+        <hr class="divider"/>
+
+        <div class="rg rg3">
+          <div class="stat hero" style="border-color:rgba(126,245,192,0.4);background:linear-gradient(135deg,rgba(126,245,192,0.08),rgba(126,245,192,0.02));box-shadow:0 0 40px rgba(126,245,192,0.08),inset 0 1px 0 rgba(126,245,192,0.2)">
+            <div class="stat-val sage" id="t-per">$0.00</div>
+            <div class="stat-lbl">Per Person</div>
+          </div>
+          <div class="stat">
+            <div class="stat-val" id="t-tip">$0.00</div>
+            <div class="stat-lbl">Tip Amount</div>
+          </div>
+          <div class="stat">
+            <div class="stat-val" id="t-grand">$0.00</div>
+            <div class="stat-lbl">Grand Total</div>
+          </div>
+        </div>
+
+        <div class="info-list" style="margin-top:16px">
+          <div class="ir"><span class="ir-l">Tip per Person</span><span class="ir-v sage" id="t-tip-pp">$0.00</span></div>
+          <div class="ir"><span class="ir-l">Bill per Person (no tip)</span><span class="ir-v" id="t-bill-pp">$0.00</span></div>
+          <div class="ir"><span class="ir-l">Effective Tip Rate</span><span class="ir-v amber" id="t-eff">15%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       UNIT CONVERTER PANEL
+  ════════════════════════════════ -->
+  <div class="panel" id="unit-panel">
+    <div class="card">
+      <div class="card-inner">
+        <div class="card-head">
+          <div class="card-titles">
+            <div class="card-badge">✦ Converter</div>
+            <div class="card-name">Unit Converter</div>
+            <div class="card-sub">Length, weight, temperature, speed, area, volume,<br>data, and time — all in one place.</div>
+          </div>
+          <div class="card-icon-big">📐</div>
+        </div>
+
+        <div class="field">
+          <div class="lbl">Category</div>
+          <select id="u-cat" onchange="loadUnits()">
+            <option value="length">Length</option>
+            <option value="weight">Weight / Mass</option>
+            <option value="temp">Temperature</option>
+            <option value="speed">Speed</option>
+            <option value="area">Area</option>
+            <option value="volume">Volume</option>
+            <option value="data">Digital Storage</option>
+            <option value="time">Time</option>
+            <option value="energy">Energy</option>
+            <option value="pressure">Pressure</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <div class="field"><div class="lbl">From</div><select id="u-from" onchange="convertUnit()"></select></div>
+          <div class="field"><div class="lbl">To</div><select id="u-to" onchange="convertUnit()"></select></div>
+        </div>
+
+        <div class="field"><div class="lbl">Value</div><input type="number" id="u-val" placeholder="Enter value" oninput="convertUnit()"/></div>
+
+        <button class="swap-btn" onclick="swapUnits()">⇌ Swap Units</button>
+
+        <div class="conv-display" id="u-display">
+          <div class="conv-side" style="text-align:left">
+            <div class="conv-val gold" id="u-from-val">—</div>
+            <div class="conv-unit-name" id="u-from-name">—</div>
+          </div>
+          <div class="conv-divider">→</div>
+          <div class="conv-side" style="text-align:right">
+            <div class="conv-val ice" id="u-to-val">—</div>
+            <div class="conv-unit-name" id="u-to-name">—</div>
+          </div>
+        </div>
+
+        <div class="info-list" id="u-extra"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       CALCULATOR PANEL
+  ════════════════════════════════ -->
+  <div class="panel" id="calc-panel">
+    <div class="card">
+      <div class="card-inner">
+        <div class="card-head">
+          <div class="card-titles">
+            <div class="card-badge">✦ Arithmetic</div>
+            <div class="card-name">Calculator</div>
+            <div class="card-sub">Full scientific arithmetic with memory functions<br>and keyboard support.</div>
+          </div>
+          <div class="card-icon-big">🧮</div>
+        </div>
+
+        <div class="calc-screen">
+          <div class="calc-memory" id="c-mem-ind">M</div>
+          <div class="calc-hist" id="c-hist"></div>
+          <div class="calc-main" id="c-main">0</div>
+        </div>
+
+        <!-- Memory row -->
+        <div class="mem-row">
+          <button class="key mem" onclick="cKey('MC')">MC</button>
+          <button class="key mem" onclick="cKey('MR')">MR</button>
+          <button class="key mem" onclick="cKey('M-')">M−</button>
+          <button class="key mem" onclick="cKey('M+')">M+</button>
+        </div>
+
+        <!-- Main keypad -->
+        <div class="keypad">
+          <button class="key fn" onclick="cKey('AC')">AC</button>
+          <button class="key fn" onclick="cKey('+/-')">+/−</button>
+          <button class="key fn" onclick="cKey('%')">%</button>
+          <button class="key op" onclick="cKey('/')">÷</button>
+
+          <button class="key" onclick="cKey('7')">7</button>
+          <button class="key" onclick="cKey('8')">8</button>
+          <button class="key" onclick="cKey('9')">9</button>
+          <button class="key op" onclick="cKey('*')">×</button>
+
+          <button class="key" onclick="cKey('4')">4</button>
+          <button class="key" onclick="cKey('5')">5</button>
+          <button class="key" onclick="cKey('6')">6</button>
+          <button class="key op" onclick="cKey('-')">−</button>
+
+          <button class="key" onclick="cKey('1')">1</button>
+          <button class="key" onclick="cKey('2')">2</button>
+          <button class="key" onclick="cKey('3')">3</button>
+          <button class="key op" onclick="cKey('+')">+</button>
+
+          <button class="key zero" onclick="cKey('0')">0</button>
+          <button class="key" onclick="cKey('.')">.</button>
+          <button class="key eq" onclick="cKey('=')">=</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+<footer>
+  <span class="g">ADRIT CAL</span>
+  <span> — Crafted for GitHub Pages — Precision in every calculation</span>
+</footer>
+
+<script>
+// ════════════ TABS ════════════
+function show(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.getElementById(name+'-panel').classList.add('on');
+  document.getElementById('tab-'+name).classList.add('on');
+}
+
+// ════════════ HELPERS ════════════
+const fmt = (n, dec=2) => {
+  if (isNaN(n) || !isFinite(n)) return '—';
+  return n.toLocaleString('en-US', {minimumFractionDigits:dec, maximumFractionDigits:dec});
+};
+const fmtM = n => '$' + fmt(n);
+const shortNum = n => {
+  if (n >= 1e9) return (n/1e9).toFixed(2)+'B';
+  if (n >= 1e6) return (n/1e6).toFixed(2)+'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1)+'K';
+  return fmt(n, 0);
+};
+
+// ════════════ AGE ════════════
+(()=>{
+  const t = new Date();
+  document.getElementById('a-asof').value = t.toISOString().split('T')[0];
+  document.getElementById('a-dob').max = t.toISOString().split('T')[0];
+})();
+
+function calcAge() {
+  const dob = new Date(document.getElementById('a-dob').value);
+  const asof = new Date(document.getElementById('a-asof').value);
+  if (!document.getElementById('a-dob').value || isNaN(dob) || dob >= asof) return;
+
+  let yr = asof.getFullYear() - dob.getFullYear();
+  let mo = asof.getMonth() - dob.getMonth();
+  let dy = asof.getDate() - dob.getDate();
+  if (dy < 0) { mo--; dy += new Date(asof.getFullYear(), asof.getMonth(), 0).getDate(); }
+  if (mo < 0) { yr--; mo += 12; }
+
+  const totalMs = asof - dob;
+  const totalDy = Math.floor(totalMs / 86400000);
+  const totalWk = Math.floor(totalDy / 7);
+  const totalMo = yr * 12 + mo;
+  const totalHr = Math.floor(totalDy * 24);
+  const totalMn = Math.floor(totalHr * 60);
+  const totalSec = Math.floor(totalMn * 60);
+
+  document.getElementById('r-yr').textContent = yr;
+  document.getElementById('r-mo').textContent = shortNum(totalMo);
+  document.getElementById('r-wk').textContent = shortNum(totalWk);
+  document.getElementById('r-dy').textContent = shortNum(totalDy);
+  document.getElementById('r-hr').textContent = shortNum(totalHr);
+  document.getElementById('r-mn').textContent = shortNum(totalMn);
+  document.getElementById('r-sec').textContent = shortNum(totalSec);
+
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  document.getElementById('r-dow').textContent = days[dob.getDay()];
+  document.getElementById('r-zod').textContent = getZodiac(dob.getMonth()+1, dob.getDate());
+  document.getElementById('r-czod').textContent = getChineseZodiac(dob.getFullYear());
+
+  const nextB = new Date(asof.getFullYear(), dob.getMonth(), dob.getDate());
+  if (nextB <= asof) nextB.setFullYear(nextB.getFullYear()+1);
+  const dUntil = Math.ceil((nextB - asof) / 86400000);
+  document.getElementById('r-nbday').textContent = dUntil === 0 ? '🎂 Today!' : dUntil + ' days away';
+
+  const gens = [
+    [2013,2025,'Gen Alpha'], [1997,2012,'Gen Z'], [1981,1996,'Millennial'],
+    [1965,1980,'Gen X'], [1946,1964,'Baby Boomer'], [1928,1945,'Silent Generation']
+  ];
+  const byear = dob.getFullYear();
+  const gen = gens.find(g => byear >= g[0] && byear <= g[1]);
+  document.getElementById('r-gen').textContent = gen ? gen[2] : 'Greatest Generation';
+
+  document.getElementById('age-res').classList.add('show');
+}
+
+function getZodiac(m, d) {
+  const z = [
+    [1,20,'♒ Aquarius'],[2,19,'♓ Pisces'],[3,21,'♈ Aries'],[4,20,'♉ Taurus'],
+    [5,21,'♊ Gemini'],[6,21,'♋ Cancer'],[7,23,'♌ Leo'],[8,23,'♍ Virgo'],
+    [9,23,'♎ Libra'],[10,23,'♏ Scorpio'],[11,22,'♐ Sagittarius'],[12,22,'♑ Capricorn']
+  ];
+  for (let i=0;i<z.length;i++){
+    if (m===z[i][0] && d>=z[i][1]) return z[i][2];
+    const nm = z[(i+1)%12];
+    if (m===nm[0] && d<nm[1]) return z[i][2];
+  }
+  return '♑ Capricorn';
+}
+function getChineseZodiac(year) {
+  const a = ['🐀 Rat','🐂 Ox','🐯 Tiger','🐇 Rabbit','🐉 Dragon','🐍 Snake','🐴 Horse','🐑 Goat','🐒 Monkey','🐓 Rooster','🐕 Dog','🐖 Pig'];
+  return a[(year - 2008 % 12 + 60) % 12];
+}
+
+// ════════════ BMI ════════════
+function toggleBmiUnit() {
+  const imp = document.getElementById('b-unit').value === 'imperial';
+  document.getElementById('b-metric').style.display = imp ? 'none' : 'block';
+  document.getElementById('b-imp').style.display = imp ? 'block' : 'none';
+}
+
+function calcBmi() {
+  const unit = document.getElementById('b-unit').value;
+  let bmi, weightKg, heightM;
+
+  if (unit === 'metric') {
+    weightKg = parseFloat(document.getElementById('b-kg').value);
+    heightM = parseFloat(document.getElementById('b-cm').value) / 100;
+  } else {
+    const lbs = parseFloat(document.getElementById('b-lbs').value);
+    const totalIn = (parseFloat(document.getElementById('b-ft').value)||0)*12 + (parseFloat(document.getElementById('b-in').value)||0);
+    weightKg = lbs * 0.453592;
+    heightM = totalIn * 0.0254;
+  }
+  if (!weightKg || !heightM) return;
+
+  bmi = weightKg / (heightM * heightM);
+  const minW = 18.5 * heightM * heightM;
+  const maxW = 24.9 * heightM * heightM;
+  const idealW = 22 * heightM * heightM;
+  const delta = weightKg - idealW;
+
+  const age = parseFloat(document.getElementById('b-age').value) || 25;
+  const sex = document.getElementById('b-sex').value;
+  const act = parseFloat(document.getElementById('b-act').value);
+
+  // Mifflin-St Jeor BMR
+  let bmr;
+  if (sex === 'm') bmr = 10*weightKg + 6.25*heightM*100 - 5*age + 5;
+  else bmr = 10*weightKg + 6.25*heightM*100 - 5*age - 161;
+  const tdee = bmr * act;
+
+  const wUnit = unit === 'metric' ? 'kg' : 'lbs';
+  const toDisplay = unit === 'metric' ? (w => w.toFixed(1)+' kg') : (w => (w/0.453592).toFixed(1)+' lbs');
+
+  let cat, catColor;
+  if (bmi < 16)       { cat = '💀 Severely Underweight'; catColor = '#4f7cff'; }
+  else if (bmi < 18.5){ cat = '🔵 Underweight'; catColor = '#4f7cff'; }
+  else if (bmi < 25)  { cat = '✅ Normal Weight'; catColor = '#7ef5c0'; }
+  else if (bmi < 30)  { cat = '⚠️ Overweight'; catColor = '#ffc93c'; }
+  else if (bmi < 35)  { cat = '🔴 Obese Class I'; catColor = '#ff6b6b'; }
+  else                { cat = '🔴 Obese Class II+'; catColor = '#ff3b3b'; }
+
+  document.getElementById('r-bmi').textContent = bmi.toFixed(1);
+  document.getElementById('r-bmi-cat').textContent = cat;
+  document.getElementById('r-bmi-cat').style.color = catColor;
+  document.getElementById('r-hlth').textContent = toDisplay(minW) + ' – ' + toDisplay(maxW);
+  document.getElementById('r-ideal').textContent = toDisplay(idealW);
+  document.getElementById('r-delta').textContent = (delta > 0 ? '↑ Lose ' : '↓ Gain ') + toDisplay(Math.abs(delta));
+  document.getElementById('r-bmr').textContent = Math.round(bmr) + ' kcal/day';
+  document.getElementById('r-tdee').textContent = Math.round(tdee) + ' kcal/day';
+
+  const pct = Math.min(100, Math.max(0, (bmi-10)/30*100));
+  document.getElementById('bmi-pin').style.left = pct + '%';
+  document.getElementById('bmi-fill').style.width = pct + '%';
+  document.getElementById('r-bmi-pos').textContent = bmi.toFixed(1);
+  document.getElementById('bmi-res').classList.add('show');
+}
+
+// ════════════ LOAN ════════════
+function calcLoan() {
+  const P = parseFloat(document.getElementById('l-amt').value);
+  const annualRate = parseFloat(document.getElementById('l-rate').value);
+  const years = parseFloat(document.getElementById('l-term').value);
+  const ltype = document.getElementById('l-type').value;
+  const extra = parseFloat(document.getElementById('l-extra').value) || 0;
+  if (!P || !years || isNaN(annualRate)) return;
+
+  const r = annualRate / 100 / 12;
+  const n = years * 12;
+
+  let monthly, totalPay, totalInt;
+
+  if (ltype === 'interest') {
+    monthly = r === 0 ? 0 : P * r;
+    totalPay = monthly * n + P;
+    totalInt = monthly * n;
+  } else if (ltype === 'bullet') {
+    monthly = r === 0 ? 0 : P * r;
+    totalPay = monthly * n + P;
+    totalInt = monthly * n;
+  } else {
+    if (r === 0) { monthly = P/n; }
+    else { monthly = P * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1); }
+    totalPay = monthly * n;
+    totalInt = totalPay - P;
+  }
+
+  // payoff with extra payment
+  let savedInt = null;
+  let months2pay = n;
+  if (extra > 0 && ltype === 'amort' && r > 0) {
+    let bal = P, m2 = 0, tot2 = 0;
+    while (bal > 0 && m2 < 1200) {
+      const intPay = bal * r;
+      const prinPay = Math.min(bal, monthly - intPay + extra);
+      bal -= prinPay;
+      tot2 += monthly + extra;
+      m2++;
+    }
+    months2pay = m2;
+    savedInt = totalInt - (tot2 - P);
+  }
+
+  const payoffDate = new Date();
+  payoffDate.setMonth(payoffDate.getMonth() + months2pay);
+  const payoffStr = payoffDate.toLocaleDateString('en-US', {month:'long', year:'numeric'});
+
+  const ipRatio = (totalInt / P * 100).toFixed(1);
+  const princPct = (P / totalPay * 100).toFixed(1);
+
+  document.getElementById('r-mthly').textContent = fmtM(monthly);
+  document.getElementById('r-total-pay').textContent = fmtM(totalPay);
+  document.getElementById('r-prin').textContent = fmtM(P);
+  document.getElementById('r-int').textContent = fmtM(totalInt);
+  document.getElementById('r-npy').textContent = n + ' payments';
+  document.getElementById('r-payoff').textContent = payoffStr;
+  document.getElementById('r-iprat').textContent = ipRatio + '%';
+  document.getElementById('r-ppct').textContent = princPct + '% principal';
+  document.getElementById('loan-fill').style.width = princPct + '%';
+
+  if (savedInt && savedInt > 0) {
+    document.getElementById('r-savings').textContent = fmtM(savedInt) + ' interest saved';
+    document.getElementById('r-savings-row').style.display = 'flex';
+  } else {
+    document.getElementById('r-savings-row').style.display = 'none';
+  }
+
+  document.getElementById('loan-res').classList.add('show');
+}
+
+// ════════════ TIP ════════════
+let tipPct = 15;
+
+function pickTip(p) {
+  tipPct = p;
+  document.getElementById('t-custom').value = '';
+  document.querySelectorAll('.tip-chip').forEach(c => {
+    c.classList.toggle('on', c.textContent === p+'%');
+  });
+  calcTip();
+}
+
+function customTip() {
+  const v = parseFloat(document.getElementById('t-custom').value);
+  if (!isNaN(v)) {
+    tipPct = v;
+    document.querySelectorAll('.tip-chip').forEach(c => c.classList.remove('on'));
+  }
+  calcTip();
+}
+
+function calcTip() {
+  const bill = parseFloat(document.getElementById('t-bill').value) || 0;
+  const ppl = Math.max(1, parseInt(document.getElementById('t-ppl').value) || 1);
+  const round = document.getElementById('t-round').value;
+
+  let tipAmt = bill * (tipPct / 100);
+  let grand = bill + tipAmt;
+  let perPerson = grand / ppl;
+
+  if (round === 'person') perPerson = Math.ceil(perPerson * 100) / 100;
+  if (round === 'total') { grand = Math.ceil(grand * 100) / 100; perPerson = grand / ppl; tipAmt = grand - bill; }
+
+  const tipPP = tipAmt / ppl;
+  const billPP = bill / ppl;
+  const effRate = bill > 0 ? (tipAmt / bill * 100).toFixed(1) : tipPct;
+
+  document.getElementById('t-per').textContent = '$' + perPerson.toFixed(2);
+  document.getElementById('t-tip').textContent = '$' + tipAmt.toFixed(2);
+  document.getElementById('t-grand').textContent = '$' + grand.toFixed(2);
+  document.getElementById('t-tip-pp').textContent = '$' + tipPP.toFixed(2);
+  document.getElementById('t-bill-pp').textContent = '$' + billPP.toFixed(2);
+  document.getElementById('t-eff').textContent = effRate + '%';
+}
+
+// ════════════ UNIT CONVERTER ════════════
+const UNITS = {
+  length: {
+    units: ['Millimetre','Centimetre','Metre','Kilometre','Inch','Foot','Yard','Mile','Nautical Mile','Light Year'],
+    toBase: [0.001, 0.01, 1, 1000, 0.0254, 0.3048, 0.9144, 1609.344, 1852, 9.461e15]
+  },
+  weight: {
+    units: ['Milligram','Gram','Kilogram','Tonne','Ounce','Pound','Stone','US Ton'],
+    toBase: [0.000001, 0.001, 1, 1000, 0.028349, 0.453592, 6.35029, 907.185]
+  },
+  speed: {
+    units: ['m/s','km/h','mph','Knot','ft/s','Mach'],
+    toBase: [1, 0.277778, 0.44704, 0.514444, 0.3048, 340.29]
+  },
+  area: {
+    units: ['mm²','cm²','m²','km²','Hectare','Inch²','Foot²','Acre','Mile²'],
+    toBase: [0.000001, 0.0001, 1, 1e6, 10000, 0.000645, 0.0929, 4046.86, 2589988]
+  },
+  volume: {
+    units: ['ml','Litre','m³','US Gallon','UK Gallon','US Pint','Cup','fl oz','Tablespoon','Teaspoon'],
+    toBase: [0.001, 1, 1000, 3.78541, 4.54609, 0.473176, 0.236588, 0.029574, 0.014787, 0.004929]
+  },
+  data: {
+    units: ['Bit','Byte','Kilobyte','Megabyte','Gigabyte','Terabyte','Petabyte'],
+    toBase: [0.125, 1, 1024, 1048576, 1073741824, 1.099512e12, 1.125899e15]
+  },
+  time: {
+    units: ['Nanosecond','Microsecond','Millisecond','Second','Minute','Hour','Day','Week','Month','Year'],
+    toBase: [1e-9, 0.000001, 0.001, 1, 60, 3600, 86400, 604800, 2629800, 31557600]
+  },
+  energy: {
+    units: ['Joule','Kilojoule','Calorie','Kilocalorie','Wh','kWh','BTU','eV'],
+    toBase: [1, 1000, 4.184, 4184, 3600, 3600000, 1055.06, 1.602e-19]
+  },
+  pressure: {
+    units: ['Pascal','Kilopascal','Bar','PSI','atm','mmHg','inHg'],
+    toBase: [1, 1000, 100000, 6894.76, 101325, 133.322, 3386.39]
+  },
+  temp: { units: ['Celsius','Fahrenheit','Kelvin','Rankine'], toBase: [] }
+};
+
+function loadUnits() {
+  const cat = document.getElementById('u-cat').value;
+  const data = UNITS[cat];
+  ['u-from','u-to'].forEach((id, idx) => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = data.units.map((u,i) => `<option value="${i}">${u}</option>`).join('');
+    sel.selectedIndex = idx === 1 ? 1 : 0;
+  });
+  convertUnit();
+}
+
+function swapUnits() {
+  const f = document.getElementById('u-from');
+  const t = document.getElementById('u-to');
+  const tmp = f.value;
+  f.value = t.value;
+  t.value = tmp;
+  convertUnit();
+}
+
+function convertUnit() {
+  const cat = document.getElementById('u-cat').value;
+  const fi = parseInt(document.getElementById('u-from').value);
+  const ti = parseInt(document.getElementById('u-to').value);
+  const val = parseFloat(document.getElementById('u-val').value);
+  const data = UNITS[cat];
+  const fromName = data.units[fi];
+  const toName = data.units[ti];
+
+  let result;
+  if (isNaN(val)) { result = '—'; }
+  else if (cat === 'temp') {
+    // special temperature
+    let celsius;
+    if (fi===0) celsius = val;
+    else if (fi===1) celsius = (val-32)*5/9;
+    else if (fi===2) celsius = val-273.15;
+    else celsius = (val-491.67)*5/9;
+    if (ti===0) result = celsius;
+    else if (ti===1) result = celsius*9/5+32;
+    else if (ti===2) result = celsius+273.15;
+    else result = (celsius+273.15)*9/5;
+  } else {
+    const base = val * data.toBase[fi];
+    result = base / data.toBase[ti];
+  }
+
+  const dispResult = typeof result === 'number'
+    ? (Math.abs(result) < 0.001 || Math.abs(result) > 1e9 ? result.toExponential(4) : parseFloat(result.toPrecision(8)).toString())
+    : '—';
+
+  document.getElementById('u-from-val').textContent = isNaN(val) ? '—' : val.toString();
+  document.getElementById('u-to-val').textContent = dispResult;
+  document.getElementById('u-from-name').textContent = fromName;
+  document.getElementById('u-to-name').textContent = toName;
+
+  // build extra conversions
+  const extra = document.getElementById('u-extra');
+  if (!isNaN(val) && cat !== 'temp' && data.units.length > 2) {
+    const otherIdxs = data.units.map((_,i)=>i).filter(i => i!==fi && i!==ti).slice(0,4);
+    extra.innerHTML = otherIdxs.map(i => {
+      const base = val * data.toBase[fi];
+      const v = base / data.toBase[i];
+      const disp = Math.abs(v) < 0.001 || Math.abs(v)>1e9 ? v.toExponential(3) : parseFloat(v.toPrecision(6)).toString();
+      return `<div class="ir"><span class="ir-l">${data.units[i]}</span><span class="ir-v gold">${disp}</span></div>`;
+    }).join('');
+  } else extra.innerHTML = '';
+}
+
+// init unit converter
+loadUnits();
+
+// ════════════ CALCULATOR ════════════
+const C = { cur:'0', prev:'', op:'', fresh:false, mem:0 };
+
+function cUpdate() {
+  const n = parseFloat(C.cur);
+  const disp = isNaN(n) ? C.cur : n.toLocaleString('en-US', {maximumFractionDigits:10});
+  document.getElementById('c-main').textContent = disp;
+  const opSyms = {'+':'+','-':'−','*':'×','/':'÷'};
+  document.getElementById('c-hist').textContent =
+    C.prev && C.op ? C.prev + ' ' + (opSyms[C.op]||C.op) : '';
+  document.getElementById('c-mem-ind').classList.toggle('show', C.mem !== 0);
+}
+
+function cMath(a,b,op){
+  if(op==='+') return a+b;
+  if(op==='-') return a-b;
+  if(op==='*') return a*b;
+  if(op==='/') return b!==0?a/b:'Error';
+  return b;
+}
+
+function cKey(k) {
+  if(k==='AC'){C.cur='0';C.prev='';C.op='';C.fresh=false;}
+  else if(k==='MC'){C.mem=0;}
+  else if(k==='MR'){C.cur=C.mem.toString();C.fresh=true;}
+  else if(k==='M+'){C.mem+=(parseFloat(C.cur)||0);}
+  else if(k==='M-'){C.mem-=(parseFloat(C.cur)||0);}
+  else if(k==='+/-'){C.cur=(parseFloat(C.cur)*-1).toString();}
+  else if(k==='%'){C.cur=(parseFloat(C.cur)/100).toString();}
+  else if(['+','-','*','/'].includes(k)){
+    if(C.op&&!C.fresh){C.cur=cMath(parseFloat(C.prev),parseFloat(C.cur),C.op).toString();}
+    C.prev=C.cur;C.op=k;C.fresh=false;C.cur='0';
+  }
+  else if(k==='='){
+    if(!C.op)return;
+    C.cur=cMath(parseFloat(C.prev),parseFloat(C.cur),C.op).toString();
+    C.prev='';C.op='';C.fresh=true;
+  }
+  else if(k==='.'){if(!C.cur.includes('.'))C.cur+='.';}
+  else{
+    if(C.cur==='0'||C.fresh){C.cur=k;C.fresh=false;}
+    else C.cur+=k;
+  }
+  cUpdate();
+}
+
+document.addEventListener('keydown', e => {
+  if(!document.getElementById('calc-panel').classList.contains('on')) return;
+  const m={'0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9',
+    '+':'+','-':'-','*':'*','/':'/','Enter':'=','=':'=','.':'.'};
+  if(m[e.key]){e.preventDefault();cKey(m[e.key]);}
+  if(e.key==='Escape')cKey('AC');
+  if(e.key==='Backspace'){
+    e.preventDefault();
+    C.cur=C.cur.length>1?C.cur.slice(0,-1):'0';
+    cUpdate();
+  }
+});
+
+cUpdate();
+calcTip();
+</script>
+</body>
+</html>
