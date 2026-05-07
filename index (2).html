@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CalcuLove</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: #0d0b1e;
+      background: radial-gradient(ellipse at 80% 60%, rgba(120, 40, 80, 0.35) 0%, transparent 60%),
+                  radial-gradient(ellipse at 20% 80%, rgba(60, 30, 100, 0.3) 0%, transparent 50%),
+                  #0d0b1e;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      color: #e8e0f0;
+      overflow-x: hidden;
+    }
+
+    /* Starfield */
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .star {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0.5;
+      animation: twinkle 3s infinite alternate;
+    }
+    @keyframes twinkle {
+      from { opacity: 0.2; }
+      to   { opacity: 0.8; }
+    }
+
+    /* Layout */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 48px 20px 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 36px;
+    }
+
+    /* Header */
+    header { text-align: center; }
+    header h1 {
+      font-size: clamp(2.4rem, 6vw, 3.8rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #f8a4a4 20%, #f5c97a 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -1px;
+    }
+    header p {
+      margin-top: 8px;
+      font-size: 1rem;
+      color: #a89cc0;
+      letter-spacing: 0.5px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .tab-btn {
+      padding: 10px 22px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.05);
+      color: #c0b8d8;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .tab-btn:hover {
+      border-color: rgba(255,255,255,0.35);
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+    .tab-btn.active {
+      background: rgba(245,190,100,0.15);
+      border-color: rgba(245,190,100,0.55);
+      color: #f5c97a;
+    }
+
+    /* Card */
+    .card {
+      width: 100%;
+      background: rgba(255,255,255,0.055);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 36px 40px;
+      backdrop-filter: blur(10px);
+      display: none;
+    }
+    .card.active { display: block; }
+
+    .card h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #f5c97a;
+      margin-bottom: 6px;
+    }
+    .card .subtitle {
+      font-size: 0.9rem;
+      color: #8a80a8;
+      margin-bottom: 28px;
+    }
+
+    /* Form */
+    .field { margin-bottom: 20px; }
+    .field label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #7a6e99;
+      margin-bottom: 8px;
+    }
+    .field input[type="date"],
+    .field input[type="text"],
+    .field input[type="number"] {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.07);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: #e0d8f4;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+      color-scheme: dark;
+    }
+    .field input:focus {
+      border-color: rgba(245,190,100,0.6);
+    }
+
+    /* Button */
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #e8b84b, #f5d87a);
+      border: none;
+      border-radius: 12px;
+      color: #1a1228;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+      margin-top: 4px;
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+
+    /* Result box */
+    .result-box {
+      margin-top: 24px;
+      padding: 20px 22px;
+      background: rgba(245,190,100,0.08);
+      border: 1px solid rgba(245,190,100,0.25);
+      border-radius: 12px;
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+    .result-box.show { display: block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+    .result-box .result-main {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #f5c97a;
+      margin-bottom: 6px;
+    }
+    .result-box .result-sub {
+      font-size: 0.88rem;
+      color: #9a90b8;
+      line-height: 1.6;
+    }
+
+    /* Love meter */
+    .love-meter {
+      margin-top: 14px;
+      height: 12px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .love-meter-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f8a4a4, #f56e8a);
+      transition: width 1s ease;
+      width: 0%;
+    }
+
+    /* Calculator grid */
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .calc-display {
+      grid-column: 1 / -1;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 14px 18px;
+      text-align: right;
+      font-size: 1.8rem;
+      font-weight: 300;
+      color: #f5e8c0;
+      min-height: 64px;
+      word-break: break-all;
+      letter-spacing: 1px;
+    }
+    .calc-btn {
+      padding: 16px 8px;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.06);
+      color: #d8d0ee;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .calc-btn:hover { background: rgba(255,255,255,0.13); color: #fff; }
+    .calc-btn.op   { color: #f5c97a; border-color: rgba(245,190,100,0.25); }
+    .calc-btn.eq   { background: linear-gradient(135deg,#e8b84b,#f5d87a); color: #1a1228; border-color: transparent; }
+    .calc-btn.eq:hover { opacity: 0.9; }
+    .calc-btn.span2 { grid-column: span 2; }
+    .calc-btn.clear { color: #f8a4a4; border-color: rgba(248,164,164,0.25); }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      font-size: 0.82rem;
+      color: #5a5070;
+      padding-bottom: 30px;
+    }
+    footer span { color: #f8a4a4; }
+  </style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars" id="stars"></div>
+
+<div class="container">
+
+  <header>
+    <h1>CalcuLove</h1>
+    <p>Age · Love · Life's little calculations</p>
+  </header>
+
+  <!-- Tabs -->
+  <nav class="tabs">
+    <button class="tab-btn active" onclick="switchTab('age', this)">🎂 Age Calculator</button>
+    <button class="tab-btn"        onclick="switchTab('love', this)">💝 Love Calculator</button>
+    <button class="tab-btn"        onclick="switchTab('calc', this)">🧮 Calculator</button>
+  </nav>
+
+  <!-- Age Calculator -->
+  <section class="card active" id="tab-age">
+    <h2>🎂 Age Calculator</h2>
+    <p class="subtitle">Find out exactly how old you are — down to the day</p>
+
+    <div class="field">
+      <label>Your Date of Birth</label>
+      <input type="date" id="dob" value="2003-09-22"/>
+    </div>
+    <div class="field">
+      <label>Calculate Age As Of</label>
+      <input type="date" id="asof" value="2026-05-07"/>
+    </div>
+    <button class="btn-primary" onclick="calcAge()">✨ Calculate My Age</button>
+
+    <div class="result-box" id="age-result">
+      <div class="result-main" id="age-main"></div>
+      <div class="result-sub"  id="age-sub"></div>
+    </div>
+  </section>
+
+  <!-- Love Calculator -->
+  <section class="card" id="tab-love">
+    <h2>💝 Love Calculator</h2>
+    <p class="subtitle">Enter two names and discover your compatibility ✨</p>
+
+    <div class="field">
+      <label>Your Name</label>
+      <input type="text" id="name1" placeholder="e.g. Alex"/>
+    </div>
+    <div class="field">
+      <label>Their Name</label>
+      <input type="text" id="name2" placeholder="e.g. Jordan"/>
+    </div>
+    <button class="btn-primary" onclick="calcLove()">💘 Calculate Love</button>
+
+    <div class="result-box" id="love-result">
+      <div class="result-main" id="love-main"></div>
+      <div class="love-meter"><div class="love-meter-fill" id="love-fill"></div></div>
+      <div class="result-sub" id="love-sub" style="margin-top:10px"></div>
+    </div>
+  </section>
+
+  <!-- Calculator -->
+  <section class="card" id="tab-calc">
+    <h2>🧮 Calculator</h2>
+    <p class="subtitle">Your everyday math companion</p>
+
+    <div id="calc-display" class="calc-display">0</div>
+    <div class="calc-grid">
+      <button class="calc-btn clear span2" onclick="calcClear()">AC</button>
+      <button class="calc-btn op"          onclick="calcOp('%')">%</button>
+      <button class="calc-btn op"          onclick="calcOp('/')">÷</button>
+
+      <button class="calc-btn" onclick="calcNum('7')">7</button>
+      <button class="calc-btn" onclick="calcNum('8')">8</button>
+      <button class="calc-btn" onclick="calcNum('9')">9</button>
+      <button class="calc-btn op" onclick="calcOp('*')">×</button>
+
+      <button class="calc-btn" onclick="calcNum('4')">4</button>
+      <button class="calc-btn" onclick="calcNum('5')">5</button>
+      <button class="calc-btn" onclick="calcNum('6')">6</button>
+      <button class="calc-btn op" onclick="calcOp('-')">−</button>
+
+      <button class="calc-btn" onclick="calcNum('1')">1</button>
+      <button class="calc-btn" onclick="calcNum('2')">2</button>
+      <button class="calc-btn" onclick="calcNum('3')">3</button>
+      <button class="calc-btn op" onclick="calcOp('+')">+</button>
+
+      <button class="calc-btn span2" onclick="calcNum('0')">0</button>
+      <button class="calc-btn" onclick="calcNum('.')">.</button>
+      <button class="calc-btn eq" onclick="calcEquals()">=</button>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  CalcuLove · Made with <span>♥</span> for every curious heart
+</footer>
+
+<script>
+  /* ----- Stars ----- */
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.cssText = `
+      top:${Math.random()*100}%;
+      left:${Math.random()*100}%;
+      width:${Math.random()*2+1}px;
+      height:${Math.random()*2+1}px;
+      animation-delay:${Math.random()*4}s;
+      animation-duration:${2+Math.random()*3}s;
+      opacity:${Math.random()*0.6+0.1};
+    `;
+    starsEl.appendChild(s);
+  }
+
+  /* ----- Tabs ----- */
+  function switchTab(id, btn) {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  /* ----- Age Calculator ----- */
+  function calcAge() {
+    const dob   = new Date(document.getElementById('dob').value);
+    const asof  = new Date(document.getElementById('asof').value);
+    if (isNaN(dob) || isNaN(asof)) return alert('Please enter valid dates.');
+    if (dob > asof) return alert('Date of birth must be before the target date.');
+
+    let years  = asof.getFullYear() - dob.getFullYear();
+    let months = asof.getMonth()    - dob.getMonth();
+    let days   = asof.getDate()     - dob.getDate();
+
+    if (days < 0) {
+      months--;
+      const prev = new Date(asof.getFullYear(), asof.getMonth(), 0);
+      days += prev.getDate();
+    }
+    if (months < 0) { years--; months += 12; }
+
+    const totalDays = Math.floor((asof - dob) / 86400000);
+    const totalWeeks = Math.floor(totalDays / 7);
+
+    document.getElementById('age-main').textContent =
+      `${years} years, ${months} months & ${days} days`;
+    document.getElementById('age-sub').innerHTML =
+      `That's <strong>${totalDays.toLocaleString()}</strong> days &nbsp;|&nbsp; ` +
+      `<strong>${totalWeeks.toLocaleString()}</strong> weeks &nbsp;|&nbsp; ` +
+      `<strong>${(totalDays * 24).toLocaleString()}</strong> hours`;
+
+    const r = document.getElementById('age-result');
+    r.classList.remove('show');
+    void r.offsetWidth;
+    r.classList.add('show');
+  }
+
+  /* ----- Love Calculator ----- */
+  function calcLove() {
+    const n1 = document.getElementById('name1').value.trim();
+    const n2 = document.getElementById('name2').value.trim();
+    if (!n1 || !n2) return alert('Please enter both names.');
+
+    // Deterministic but fun score
+    const combined = (n1 + n2).toLowerCase().replace(/\s/g,'');
+    let hash = 0;
+    for (let c of combined) hash = (hash * 31 + c.charCodeAt(0)) & 0xffffffff;
+    const score = 40 + Math.abs(hash % 60); // 40–99 range
+
+    const emojis = score >= 90 ? '💞💞💞' : score >= 75 ? '💕💕' : score >= 60 ? '💗' : '💛';
+    const msgs   = score >= 90 ? "A match made in the stars! 🌟" :
+                   score >= 75 ? "Great chemistry between you two! 🔥" :
+                   score >= 60 ? "There's definitely something there! ✨" :
+                                 "Opposites can attract too! 🌈";
+
+    document.getElementById('love-main').textContent  = `${score}% ${emojis}`;
+    document.getElementById('love-sub').textContent   = `${n1} & ${n2} — ${msgs}`;
+
+    const r = document.getElementById('love-result');
+    r.classList.remove('show');
+    void r.offsetWidth;
+    r.classList.add('show');
+
+    setTimeout(() => {
+      document.getElementById('love-fill').style.width = score + '%';
+    }, 50);
+  }
+
+  /* ----- Basic Calculator ----- */
+  let calcExpr = ''; let justEq = false;
+
+  function updateDisplay(val) {
+    document.getElementById('calc-display').textContent = val || '0';
+  }
+
+  function calcNum(ch) {
+    if (justEq && !isNaN(ch)) { calcExpr = ''; }
+    justEq = false;
+    if (ch === '.' && calcExpr.split(/[\+\-\*\/]/).pop().includes('.')) return;
+    calcExpr += ch;
+    updateDisplay(calcExpr.replace(/\*/g,'×').replace(/\//g,'÷'));
+  }
+
+  function calcOp(op) {
+    justEq = false;
+    if (calcExpr === '' && op === '-') { calcExpr = '-'; updateDisplay('-'); return; }
+    if (calcExpr === '') return;
+    const last = calcExpr.slice(-1);
+    if (['+','-','*','/','%'].includes(last)) calcExpr = calcExpr.slice(0,-1);
+    calcExpr += op;
+    updateDisplay(calcExpr.replace(/\*/g,'×').replace(/\//g,'÷'));
+  }
+
+  function calcEquals() {
+    if (!calcExpr) return;
+    try {
+      // Safe eval via Function
+      let result = Function('"use strict"; return (' + calcExpr + ')')();
+      result = parseFloat(result.toPrecision(12));
+      updateDisplay(result);
+      calcExpr = String(result);
+      justEq = true;
+    } catch { updateDisplay('Error'); calcExpr = ''; }
+  }
+
+  function calcClear() { calcExpr = ''; justEq = false; updateDisplay('0'); }
+
+  // Keyboard support
+  document.addEventListener('keydown', e => {
+    const card = document.getElementById('tab-calc');
+    if (!card.classList.contains('active')) return;
+    if (!isNaN(e.key) || e.key === '.') calcNum(e.key);
+    else if (['+','-','*','/','%'].includes(e.key)) calcOp(e.key);
+    else if (e.key === 'Enter' || e.key === '=') calcEquals();
+    else if (e.key === 'Backspace') { calcExpr = calcExpr.slice(0,-1); updateDisplay(calcExpr || '0'); }
+    else if (e.key === 'Escape') calcClear();
+  });
+</script>
+</body>
+</html>
